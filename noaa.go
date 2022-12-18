@@ -449,6 +449,7 @@ func LatestStationObservation(stationID string) (observation Observation, err er
 	path := fmt.Sprintf("/observations/latest", stationID)
 
 	endpoint := fmt.Sprintf("%s/%s", stationID, path)
+	fmt.Println("ENDPOINT: ", endpoint)
 	res, err := apiCall(endpoint)
 	if err != nil {
 		return observation, fmt.Errorf("failed to get latest observations: %v", err)
