@@ -12,7 +12,7 @@ package noaa_test
 import (
 	"testing"
 
-	"github.com/icodealot/noaa"
+	"github.com/chrisdobbins/noaa"
 )
 
 func TestBlank(t *testing.T) {

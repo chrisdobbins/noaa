@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 )
 
 // deprecated
@@ -401,4 +402,62 @@ func HourlyForecast(lat string, long string) (forecast *HourlyForecastResponse, 
 	}
 	forecast.Point = point
 	return forecast, nil
+}
+
+type ObservationValue struct {
+	Value          int32  `json:"value"`
+	MaxValue       int32  `json:"maxValue"`
+	MinValue       int32  `json:"minValue"`
+	UnitCode       string `json:"unitCode"`
+	QualityControl string `json:"qualityControl"`
+}
+
+type Observation struct {
+	Elevation      ObservationValue `json:"elevation"`
+	Station        string           `json:"station"`
+	Timestamp      time.Time        `json:"timestamp"`
+	PresentWeather []struct {
+		Intensity  string `json:"intensity"`
+		Modifier   string `json:"modifier"`
+		Weather    string `json:"weather"`
+		InVicinity bool   `json:"inVicinity"`
+	} `json:"presentWeather"`
+	Temperature               ObservationValue `json:"temperature"`
+	Dewpoint                  ObservationValue `json:"dewpoint"`
+	WindDirection             ObservationValue `json:"windDirection"`
+	WindSpeed                 ObservationValue `json:"windSpeed"`
+	WindGust                  ObservationValue `json:"windGust"`
+	BarometricPressure        ObservationValue `json:"barometricPressure"`
+	SeaLevelPressure          ObservationValue `json:"seaLevelPressure"`
+	Visibility                ObservationValue `json:"visibility"`
+	MaxTemperatureLast24Hours ObservationValue `json:"maxTemperatureLast24Hours"`
+	MinTemperatureLast24Hours ObservationValue `json:"minTemperatureLast24Hours"`
+	PrecipitationLastHour     ObservationValue `json:"precipitationLastHour"`
+	PrecipitationLast3Hours   ObservationValue `json:"precipitationLast3Hours"`
+	PrecipitationLast6Hours   ObservationValue `json:"precipitationLast6Hours"`
+	RelativeHumidity          ObservationValue `json:"relativeHumidity"`
+	WindChill                 ObservationValue `json:"windChill"`
+	HeatIndex                 ObservationValue `json:"heatIndex"`
+	CloudLayers               []struct {
+		Base   ObservationValue `json:"base"`
+		Amount string           `json:"amount"`
+	} `json:"cloudLayers"`
+}
+
+func LatestStationObservation(stationID string) (observation Observation, err error) {
+	// /stations/{stationId}/observations/latest
+	path := fmt.Sprintf("stations/%s/observations/latest", stationID)
+
+	endpoint := fmt.Sprintf("%s/%s", config.BaseURL, path)
+	res, err := apiCall(endpoint)
+	if err != nil {
+		return observation, fmt.Errorf("failed to get latest observations: %v", err)
+	}
+	defer res.Body.Close()
+	decoder := json.NewDecoder(res.Body)
+	observation = Observation{}
+	if err = decoder.Decode(&observation); err != nil {
+		return Observation{}, err
+	}
+	return observation, err
 }
