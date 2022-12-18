@@ -405,11 +405,11 @@ func HourlyForecast(lat string, long string) (forecast *HourlyForecastResponse, 
 }
 
 type ObservationValue struct {
-	Value          int32  `json:"value"`
-	MaxValue       int32  `json:"maxValue"`
-	MinValue       int32  `json:"minValue"`
-	UnitCode       string `json:"unitCode"`
-	QualityControl string `json:"qualityControl"`
+	Value          float64 `json:"value"`
+	MaxValue       float64 `json:"maxValue"`
+	MinValue       float64 `json:"minValue"`
+	UnitCode       string  `json:"unitCode"`
+	QualityControl string  `json:"qualityControl"`
 }
 
 type Observation struct {
