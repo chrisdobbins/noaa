@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/icodealot/noaa"
+	"github.com/chrisdobbins/noaa"
 )
 
 func ExampleSetConfig() {

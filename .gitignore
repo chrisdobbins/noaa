@@ -9,7 +9,7 @@
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
-
+*.md
 # IDE related
 .vscode/
 .idea/
