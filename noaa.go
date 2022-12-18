@@ -446,9 +446,8 @@ type Observation struct {
 
 func LatestStationObservation(stationID string) (observation Observation, err error) {
 	// /stations/{stationId}/observations/latest
-	path := fmt.Sprintf("/observations/latest", stationID)
+	endpoint := fmt.Sprintf("%s/observations/latest", stationID)
 
-	endpoint := fmt.Sprintf("%s/%s", stationID, path)
 	fmt.Println("ENDPOINT: ", endpoint)
 	res, err := apiCall(endpoint)
 	if err != nil {
