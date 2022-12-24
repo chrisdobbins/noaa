@@ -34,6 +34,9 @@ type PointsResponse struct {
 	Office                      string `json:"forecastOffice"`
 	GridX                       int64  `json:"gridX"`
 	GridY                       int64  `json:"gridY"`
+	GridID                      string `json:"gridId"`
+	County                      string `json:"county"`
+	FireWeatherZone             string `json:"fireWeatherZone"`
 	EndpointForecast            string `json:"forecast"`
 	EndpointForecastHourly      string `json:"forecastHourly"`
 	EndpointObservationStations string `json:"observationStations"`
@@ -448,7 +451,6 @@ func LatestStationObservation(stationID string) (observation Observation, err er
 	// /stations/{stationId}/observations/latest
 	endpoint := fmt.Sprintf("%s/observations/latest", stationID)
 
-	// fmt.Println("ENDPOINT: ", endpoint)
 	res, err := apiCall(endpoint)
 	if err != nil {
 		return observation, fmt.Errorf("failed to get latest observations: %v", err)
