@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
@@ -16,7 +17,8 @@ import (
 // Default values for the weather.gov REST API config which will
 // be replaced by Config. These are subject to deletion in the future.
 // Instead, use noaa.GetConfig followed by:
-//     Config.BaseURL, Config.UserAgent, Config.Accept
+//
+//	Config.BaseURL, Config.UserAgent, Config.Accept
 const (
 	API       = "https://api.weather.gov"
 	APIKey    = "github.com/icodealot/noaa" // User-Agent default value
@@ -462,4 +464,48 @@ func LatestStationObservation(stationID string) (observation Observation, err er
 		return Observation{}, err
 	}
 	return observation, err
+}
+
+type Alert struct {
+	ID          string `json:"@id"`
+	Sent        string `json:"sent"`
+	Effective   string `json:"effective"`
+	Onset       string `json:"onset"`
+	Expires     string `json:"expires"`
+	Ends        string `json:"ends"`
+	Status      string `json:"status"`
+	Severity    string `json:"severity"`
+	Certainty   string `json:"certainty"`
+	Urgency     string `json:"urgency"`
+	Event       string `json:"event"`
+	Sender      string `json:"sender"`
+	SenderName  string `json:"senderName"`
+	Headline    string `json:"headline"`
+	Description string `json:"description"`
+	Instruction string `json:"instruction"`
+	Response    string `json:"response"`
+}
+
+func Alerts(lat string, long string) ([]Alert, error) {
+	u := fmt.Sprintf("%s%s%s,%s", config.BaseURL, "/alerts/active?point=", lat, long)
+	res, err := apiCall(u)
+	if err != nil {
+		return []Alert{}, err
+	}
+	defer res.Body.Close()
+	type Response struct {
+		Data []Alert `json:"@graph"`
+	}
+	r := Response{}
+	data, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		fmt.Println("error reading response: ", err)
+		return []Alert{}, err
+	}
+	err = json.Unmarshal(data, &r)
+	if err != nil {
+		fmt.Println("error unmarshaling response: ", err)
+		return []Alert{}, err
+	}
+	return r.Data, err
 }
